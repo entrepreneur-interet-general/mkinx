@@ -26,6 +26,5 @@ setup(name='mkinx',
           'sphinx_rtd_theme',
           'numpy',
           'pandas',
-          'pypandoc'
       ],
       )
