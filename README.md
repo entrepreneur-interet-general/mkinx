@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/mkinx.svg)](https://badge.fury.io/py/mkinx)
+
 # About
 
 `mkinx` allows you to integrate several `sphinx` documentation projects into one Home Documentation listing them and allowing you to have cross projects documentation with `mkdocs`. 
