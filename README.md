@@ -10,7 +10,9 @@ Any `sphinx` module can be used as long as `make html` works and the built code 
 
 # Install
 
-`pip install mkinx`
+```
+pip install mkinx
+```
 
 # Getting Started
 
