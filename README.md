@@ -6,7 +6,7 @@
 
 Any `sphinx` module can be used as long as `make html` works and the built code is in `your_project/build`.
 
-`mkinx` comes with an example project and a standalon documention so you can already get started!
+`mkinx` comes with an example project and a standalone documention so you can already get started!
 
 # Install
 
