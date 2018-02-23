@@ -16,7 +16,7 @@ setup(name='mkinx',
       long_description=long_description,
       packages=['mkinx'],
       scripts=['bin/mkinx'],
-      url='http://github.com/vict0rsch',
+      url='https://github.com/entrepreneur-interet-general/mkinx',
       version=mkinx.__version__,
       zip_safe=False,
       install_requires=[
@@ -25,6 +25,7 @@ setup(name='mkinx',
           'mkdocs',
           'sphinx_rtd_theme',
           'numpy',
-          'pandas'
+          'pandas',
+          'pypandoc'
       ],
       )
