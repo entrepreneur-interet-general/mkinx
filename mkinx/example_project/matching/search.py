@@ -2,8 +2,6 @@
 Module pour chercher des trucs cools (package matching)
 """
 
-import pandas as pd
-
 
 def search(source, value):
     """Search for value in source database
@@ -29,6 +27,6 @@ def load(dataset):
         pd.DataFrame: dataset
     """
 
-    data_frame = pd.DataFrame()
+    data_frame = "pd.DataFrame()"
 
     return data_frame

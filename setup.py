@@ -24,7 +24,6 @@ setup(name='mkinx',
           'sphinx',
           'mkdocs',
           'sphinx_rtd_theme',
-          'numpy',
-          'pandas',
+          'mkdocs-material'
       ],
       )

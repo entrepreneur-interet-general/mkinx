@@ -2,7 +2,8 @@
 Module models in package ``classif``
 """
 
-import numpy as np
+import random
+import time
 
 
 class LogisticRegressor(object):
@@ -31,5 +32,6 @@ class LogisticRegressor(object):
 
         while True:
             print(1)
-            if np.random.randint(0, 10) > 5:
+            time.sleep(1)
+            if random.randint(0, 9) >= 5:
                 break
