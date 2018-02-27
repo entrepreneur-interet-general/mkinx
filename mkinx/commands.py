@@ -257,7 +257,7 @@ def init(args):
     input_text += " (it can be changed later in mkdocs.yml)?\n"
     input_text += "[Default: {} - Home Documentation]\n"
 
-    site_name = input(input_text.format(args.project_name))
+    site_name = input(input_text.format(args.project_name.capitalize()))
     if not site_name:
         site_name = "{} - Home Documentation".format(
             args.project_name
