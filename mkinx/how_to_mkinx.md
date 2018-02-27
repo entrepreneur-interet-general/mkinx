@@ -97,7 +97,7 @@ Explore the `mkdocs.yml` file to configure your Home Documentation. Here are the
 * `site_name:The name you want to give to this Home Documentation`.
 * `pages:` is a list of the pages available, listed on the sidebar
     * items in this list are `- page's title: file.md`
-* `theme:readthedocs`
+* `theme: material` you can also use `readthedocs` or install any other
 * `markdown_extensions:` is a list of extensions to use. they are listed [here](https://python-markdown.github.io/extensions/#officially-supported-extensions)
     * `- admonition` allows for reStructuredText-style admonition, that is the "important", "note" and "danger" colored boxes
 
