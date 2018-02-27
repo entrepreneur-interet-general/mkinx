@@ -3,7 +3,7 @@ import mkinx
 
 
 import pypandoc
-long_description = pypandoc.convert('README.md', 'rst')
+long_description = pypandoc.convert('README.md', 'rst', format='md')
 
 
 setup(name='mkinx',
