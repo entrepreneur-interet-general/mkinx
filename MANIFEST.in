@@ -1,4 +1,5 @@
 include mkinx/documentation.md
 include mkinx/index.md
+include mkinx/how_to_mkinx.md
 include mkinx/mkdocs.yml
 recursive-include mkinx/example_project/ *
