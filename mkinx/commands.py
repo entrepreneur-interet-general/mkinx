@@ -262,7 +262,7 @@ def init(args):
     site_name = input(input_text.format(args.project_name.capitalize()))
     if not site_name:
         site_name = "{} - Home Documentation".format(
-            args.project_name
+            args.project_name.capitalize()
         )
 
     lines[0] = 'site_name: {}\n'.format(site_name)
@@ -288,11 +288,9 @@ def init(args):
             'cd {} && mkinx build -F -p example_project > /dev/null'.format(
                 args.project_name
             ))
-        print(
-            '\n\n  The "RuntimeWarning: numpy.dtype size changed [...]"',
-            'warning is expected')
-        print(utils.colors.OKBLUE,
-              ' {}/{} created as a showcase of how mkinx works'.format(
+
+        print("\n\n", utils.colors.OKBLUE,
+              '{}/{} created as a showcase of how mkinx works'.format(
                   args.project_name, 'example_project'
               ),
               utils.colors.ENDC)
