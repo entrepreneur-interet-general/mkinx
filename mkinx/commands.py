@@ -249,6 +249,8 @@ def init(args):
              home_doc_path / 'documentation.md')
     copyfile(file_path / 'index.md',
              home_doc_path / 'index.md')
+    copyfile(file_path / 'how_to_mkinx.md',
+             home_doc_path / 'how_to_mkinx.md')
 
     with open(file_path/'mkdocs.yml', 'r') as f:
         lines = f.readlines()
