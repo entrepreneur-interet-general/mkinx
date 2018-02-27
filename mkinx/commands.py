@@ -253,7 +253,17 @@ def init(args):
     with open(file_path/'mkdocs.yml', 'r') as f:
         lines = f.readlines()
 
-    lines[0] = 'site_name: {}\n'.format(args.project_name)
+    input_text = "What is your Documentation's name"
+    input_text += " (it can be changed later in mkdocs.yml)?\n"
+    input_text += "[Default: {} - Home Documentation]\n"
+
+    site_name = input(input_text.format(args.project_name))
+    if not site_name:
+        site_name = "{} - Home Documentation".format(
+            args.project_name
+        )
+
+    lines[0] = 'site_name: {}\n'.format(site_name)
 
     with open(project_path/'mkdocs.yml', 'w') as f:
         f.writelines(lines)
