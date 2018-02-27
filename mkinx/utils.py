@@ -20,6 +20,37 @@ class colors:
     UNDERLINE = '\033[4m'
 
 
+def suggest_path(func):
+    def wrapper(*args, **kwds):
+        try:
+            func(*args, **kwds)
+        except FileNotFoundError as e:
+            print(e)
+            print()
+            print(
+                '{}Are you sure you ran "{}" in the right directory?{}'.format(
+                    colors.FAIL, func.__name__, colors.ENDC
+                ))
+            try:
+                dir_path = Path().absolute()
+                potential_projects = [
+                    str(p) for p in dir_path.iterdir()
+                    if p.is_dir() and
+                    any(
+                        ['mkdocs.yml' in str(sp) for sp in p.iterdir()]
+                    )
+                ]
+                locations = [
+                    '.' + p[p.find(str(dir_path)) + len(str(dir_path)):]
+                    for p in potential_projects
+                ]
+                print('Try in', '\n'.join(locations))
+            except:
+                pass
+
+    return wrapper
+
+
 def overwrite_home(project, dir_path):
     """In the project's index.html built file, replace the top "source"
     link with a link to the documentation's home, which is mkdoc's home
