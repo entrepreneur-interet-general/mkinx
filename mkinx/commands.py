@@ -1,5 +1,6 @@
 from subprocess import call
 import os
+import time
 import sys
 import re
 from pathlib import Path
@@ -15,6 +16,7 @@ from . import utils
 from .conf import PORT, __VERSION__, PROJECT_MARKER
 
 
+@utils.suggest_path
 def serve(args):
     """Start a server which will watch .md and .rst files for changes.
     If a md file changes, the Home Documentation is rebuilt. If a .rst
@@ -61,7 +63,32 @@ def serve(args):
             return route.split('?')[0]
 
     # Serve as deamon thread
-    httpd = socketserver.TCPServer((host, port), MkinxHTTPHandler)
+    success = False
+    count = 0
+    print('Waiting for server port...')
+    try:
+        while not success:
+            try:
+                httpd = socketserver.TCPServer((host, port), MkinxHTTPHandler)
+                success = True
+            except OSError:
+                count += 1
+            finally:
+                if not success and count > 20:
+                    s = 'port {} seems occupied. Try with {} ? (y/n)'
+                    if 'y' in input(s.format(port, port + 1)):
+                        port += 1
+                        count = 0
+                    else:
+                        print(
+                            'You can specify a custom port with mkinx serve -s'
+                        )
+                        return
+                time.sleep(0.5)
+    except KeyboardInterrupt:
+        print("Aborting.")
+        return
+
     httpd.allow_reuse_address = True
     print("\nServing at http://{}:{}\n".format(host, port))
     thread = threading.Thread(target=httpd.serve_forever)
@@ -110,31 +137,40 @@ def build(args):
                     PROJECT_MARKER in os.listdir(dir_path / m)}
 
     if args.all and args.projects:
-        raise ValueError("Can't use both the 'projects' and 'all' flags")
+        print(
+            "{}Can't use both the 'projects' and 'all' flags{}".format(
+                utils.colors.FAIL, utils.colors.ENDC
+            )
+        )
+        return
 
     if not args.all and not args.projects:
-        raise ValueError("You have to specify at least one project (or all)")
+        print(
+            "{}You have to specify at least one project (or all){}".format(
+                utils.colors.FAIL, utils.colors.ENDC
+            )
+        )
+        return
 
     if args.force:
         go = True
         projects = all_projects if args.all else all_projects.intersection(
             set(args.projects))
 
-    elif args.projects and 'y' in input(
-        'You are about to build the docs for: \
-        \n- {}\nContinue? (y/n) '.format(
-            '\n- '.join(args.projects)
-        )
-    ):
-        go = True
-        projects = all_projects.intersection(
-            set(args.projects))
-    elif args.all and 'y' in input(
-            "You're about to build the docs for ALL projects.\
-            \nContinue? (y/n) "
-    ):
-        go = True
-        projects = all_projects
+    elif args.projects:
+        s = 'You are about to build the docs for: '
+        s += "\n- {}\nContinue? (y/n) ".format(
+            '\n- '.join(args.projects))
+        if 'y' in input(s):
+            go = True
+            projects = all_projects.intersection(
+                set(args.projects))
+    elif args.all:
+        s = "You're about to build the docs for ALL projects."
+        s += "\nContinue? (y/n) "
+        if 'y' in input(s):
+            go = True
+            projects = all_projects
 
     if go:
         # Update projects links
@@ -177,16 +213,17 @@ def init(args):
 
     Args:
         args (ArgumentParser): Flags from the CLI
-
-    Raises:
-        ValueError: Project name should be just strings, not a path
-        ValueError: Project should not already exist
     """
     # working directory
     dir_path = Path().absolute()
 
     if not args.project_name or args.project_name.find('/') >= 0:
-        raise ValueError('You should specify a valid project name')
+        print(
+            '{}You should specify a valid project name{}'.format(
+                utils.colors.FAIL, utils.colors.ENDC
+            )
+        )
+        return
 
     project_path = dir_path / args.project_name
 
@@ -194,7 +231,12 @@ def init(args):
     if not project_path.exists():
         project_path.mkdir()
     else:
-        raise ValueError('This project already exists')
+        print(
+            '{}This project already exists{}'.format(
+                utils.colors.FAIL, utils.colors.ENDC
+            )
+        )
+        return
 
     # Directory with the Home Documentation's source code
     home_doc_path = project_path / 'docs'
