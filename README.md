@@ -78,3 +78,17 @@ your_home_documentation/
 **2** -> `mkdocs`'s `index.md` file must have a `# Projects` section listing them as in the example
 
 Also, remember to run commands from your Home Documenation's root folder (in `your_home_documentation/` in the example above) otherwise you may get errors saying `mkinx` can't find a file.
+
+## Customization
+
+You may use any other theme for instance. To use `mkdocs-material` just:
+
+```
+pip install mkdocs-material
+```
+
+Then change this in `mkdocs.yaml` : `theme: material` and finally:
+
+```
+mkdocs build
+```
