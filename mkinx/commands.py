@@ -241,16 +241,18 @@ def init(args):
     # Directory with the Home Documentation's source code
     home_doc_path = project_path / 'docs'
     home_doc_path.mkdir()
+    help_doc_path = home_doc_path / 'help'
+    help_doc_path.mkdir()
 
     file_path = Path(__file__).resolve().parent
 
     # Add initial files
-    copyfile(file_path / 'documentation.md',
-             home_doc_path / 'documentation.md')
     copyfile(file_path / 'index.md',
              home_doc_path / 'index.md')
-    copyfile(file_path / 'how_to_mkinx.md',
-             home_doc_path / 'how_to_mkinx.md')
+    copyfile(file_path / 'How_To_Use_Mkinx.md',
+             help_doc_path / 'How_To_Use_Mkinx.md')
+    copyfile(file_path / 'Writing_Sphinx_Documentation.md',
+             help_doc_path / 'Writing_Sphinx_Documentation.md')
 
     with open(file_path/'mkdocs.yml', 'r') as f:
         lines = f.readlines()

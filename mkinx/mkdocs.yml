@@ -1,9 +1,9 @@
 site_name: project
 theme: material
-pages:
-  - Home: index.md
-  - How to use: how_to_mkinx.md
-  - Write Sphinx Documentation: documentation.md
+# pages:
+#   - Home: index.md
+#   - Write Sphinx Documentation: help/How_To_Use_Mkinx.md
+#   - How to use: help/Writing_Sphinx_Documentation.md
 
 markdown_extensions:
   - admonition

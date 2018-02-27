@@ -1,15 +1,39 @@
+# Writing Sphinx Documentation
+
 In this section we'll see how to generate documentation from docstrings. 
 
-This tutorial is going to show you how to write files so that Sphinx's `autodoc` reads the relevant source code and generate the documentation from the docstrings. 
+This tutorial is going to show you how to write files so that Sphinx's `autodoc` reads the relevant source code and generates the documentation from the docstrings. 
 
 !!! note
     You may use any other Sphinx module/package/functionality as long as `make html` works and the built code is in `your_project/build`.
 
 # Initialize the project's docs
 
-Say your project is called `awesome_project` -> make it a Sphinx project with:
+!!!important
+    File structure should look like this:
+```
+your_home_documentation/
+    mkdocs.yml
+    docs/
+        index.md
+        ...
+    site/
+    your_project_1/
+        build/ # sphinx's build directory
+        source/ # sphinx's documentation source directory
+        your_package_1_1/
+        your_package_1_2/
+        ...
+    your_project_2/
+        your_package_2_1/
+        your_package_2_2/
+        ...
+    ...
+```
 
-1. `cd ./awesome_project`
+Say your project is called `your_project_2` -> make it a Sphinx project with:
+
+1. `cd your_home_documentation/your_project_2`
 2. `sphinx-quickstart ./`
     * **say yes to `> Separate source and build directories (y/n)`**, 
     * keep default for the next one, 
@@ -22,7 +46,7 @@ Say your project is called `awesome_project` -> make it a Sphinx project with:
 Ok so now you have a new `build` directory, a new `source` directory and a new `Makefile`. 
 
 !!! note
-    To (manually) build the documentation from the docstrings run `make html` from the project's root. You can also just use `mkinx build` as explained [here](/#building-the-documentations).
+    To (manually) build the documentation from the docstrings run `make html` from the project's root. You can also just use `mkinx build` as explained [here](/help/How_To_Use_Mkinx#building-the-documentations).
 
 But before that, let's configure a couple things:
 
