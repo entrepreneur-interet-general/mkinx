@@ -2,6 +2,7 @@ site_name: project
 theme: material
 pages:
   - Home: index.md
+  - How to use: how_to_mkinx.md
   - Write Sphinx Documentation: documentation.md
 
 markdown_extensions:
