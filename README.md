@@ -8,6 +8,8 @@ Any `sphinx` module can be used as long as `make html` works and the built code 
 
 `mkinx` comes with an example project and a standalone documention so you can already get started!
 
+Default settings are that the Home Documentation will use a Material Design theme and Project Documentations will use Read The Docs's theme, to better distinguish the hierarchy. You can change that (in respectively `mkdocs.yml` and `conf.py`).
+
 # Install
 
 ```
@@ -81,13 +83,13 @@ Also, remember to run commands from your Home Documenation's root folder (in `yo
 
 ## Customization
 
-You may use any other theme for instance. To use `mkdocs-material` just:
+You may use any other theme for instance. To use `mkdocs-nature` just:
 
 ```
-pip install mkdocs-material
+pip install mkdocs-nature
 ```
 
-Then change this in `mkdocs.yaml` : `theme: material` and finally:
+Then change this in `mkdocs.yaml` : `theme: nature` and finally:
 
 ```
 mkdocs build

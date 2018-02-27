@@ -1,5 +1,5 @@
 site_name: project
-theme: readthedocs
+theme: material
 pages:
   - Home: index.md
   - Write Sphinx Documentation: documentation.md
