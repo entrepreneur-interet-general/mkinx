@@ -85,7 +85,7 @@ A couple examples:
 * To build a new project's documentation but leave others untouched:
     * `python build.py -p my_awesome_project`
     * Obviously works to rebuild it every time it is updated
-* To build documentations for all projects which are listed in [Projects](#projects):
+* To build documentations for all projects which are listed in [Projects](/#projects):
     * `python build.py -A -o`
     * There may be projects not listed above for any reason and you may not want to build their documentation, hence the `-o` flag
 
