@@ -170,7 +170,7 @@ class MkinxFileHandler(PatternMatchingEventHandler):
             project = relative_path.split('/')[1]
             if json.loads(os.getenv('MKINX_OFFLINE', 'false')):
                 offline = '--offline'
-            os.system('mkinx build -F -p {} {} > /dev/null'.format(
+            os.system('mkinx build -F {} -p {} > /dev/null'.format(
                 offline, project))
 
 
