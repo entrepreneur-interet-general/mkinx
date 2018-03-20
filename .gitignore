@@ -6,3 +6,5 @@ build/
 *.egg*
 *__pycache__*
 *.DS_Store*
+
+*.code-workspace
