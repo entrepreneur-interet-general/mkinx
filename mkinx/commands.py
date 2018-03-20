@@ -137,7 +137,8 @@ def build(args):
     # Projects must contain a PROJECT_MARKER file.
     all_projects = {m for m in os.listdir(dir_path)
                     if os.path.isdir(m) and
-                    PROJECT_MARKER in os.listdir(dir_path / m)}
+                    'build' in os.listdir(dir_path / m) and
+                    'source' in os.listdir(dir_path / m)}
 
     if args.all and args.projects:
         print(
@@ -291,7 +292,8 @@ def init(args):
                  project_path / 'example_project')
         static = project_path / 'example_project' / 'source'
         static /= '_static'
-        static.mkdir()
+        if not static.exists():
+            static.mkdir()
         os.system(
             'cd {} && mkinx build -F -p example_project > /dev/null'.format(
                 args.project_name

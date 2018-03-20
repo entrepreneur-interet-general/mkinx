@@ -1,5 +1,5 @@
 # Version string
-__VERSION__ = '0.1.7.1'
+__VERSION__ = '0.1.7.2'
 
 # For a directoy to be considered as a project with documentation
 # It must contain this empty file:
