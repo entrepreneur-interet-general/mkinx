@@ -1,12 +1,16 @@
 import json
 import os
+import subprocess
 from pathlib import Path
 import re
+import time
 from watchdog.events import PatternMatchingEventHandler
-
+from shutil import copyfile
 
 from .conf import PROJECT_KEY, HTML_LOCATION, TO_REPLACE_WITH_HOME
 from .conf import NEW_HOME_LINK
+
+import fnmatch
 
 
 class colors:
@@ -145,8 +149,13 @@ class MkinxFileHandler(PatternMatchingEventHandler):
 
     def on_modified(self, event):
         set_routes()
+
+        offline = ''
         if event.src_path.split('.')[-1] == 'md':
-            os.system('mkdocs build > /dev/null')
+            _ = subprocess.check_output(
+                'mkdocs build > /dev/null', shell=True)
+            if json.loads(os.getenv('MKINX_OFFLINE', 'false')):
+                make_offline()
 
         if event.src_path.split('.')[-1] == 'rst':
             # src_path:
@@ -159,4 +168,48 @@ class MkinxFileHandler(PatternMatchingEventHandler):
 
             relative_path = event.src_path.split(os.getcwd())[-1]
             project = relative_path.split('/')[1]
-            os.system('mkinx build -F -p {} > /dev/null'.format(project))
+            if json.loads(os.getenv('MKINX_OFFLINE', 'false')):
+                offline = '--offline'
+            os.system('mkinx build -F -p {} {} > /dev/null'.format(
+                offline, project))
+
+
+def make_offline():
+    """Deletes references to the external google fonts in the Home
+    Documentation's index.html file
+    """
+    dir_path = Path(os.getcwd()).absolute()
+
+    css_path = dir_path / 'site' / 'assets' / 'stylesheets'
+    material_css = css_path / 'material-style.css'
+    if not material_css.exists():
+        file_path = Path(__file__).resolve().parent
+        copyfile(file_path / 'material-style.css',
+                 material_css)
+        copyfile(file_path / 'material-icons.woff2',
+                 css_path / 'material-icons.woff2')
+
+    indexes = []
+    for root, _, filenames in os.walk(dir_path / 'site'):
+        for filename in fnmatch.filter(filenames, 'index.html'):
+            indexes.append(os.path.join(root, filename))
+    for index_file in indexes:
+        update_index_to_offline(index_file)
+
+
+def update_index_to_offline(path):
+    with open(path, 'r') as f:
+        lines = f.readlines()
+    new_lines = []
+    for l in lines:
+        if "https://fonts" in l:
+            if 'icon' in l:
+                new_lines.append(
+                    '<link rel="stylesheet"' +
+                    ' href=/assets/stylesheets/material-style.css>')
+            elif 'css' in l:
+                pass
+        else:
+            new_lines.append(l)
+    with open(path, 'w') as f:
+        f.writelines(new_lines)

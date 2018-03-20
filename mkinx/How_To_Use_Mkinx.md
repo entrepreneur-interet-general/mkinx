@@ -72,6 +72,7 @@ optional arguments:
                         [build] list of projects to build
   -s [SERVE_PORT], --serve_port [SERVE_PORT]
                         [serve] the server's port, defaults to 8443
+  --offline             [build, serve] Whether references to external APIs should be deleted from html files + load material icons locally
 ```
 
 `mkinx build` does 3 things:

@@ -2,4 +2,6 @@ include mkinx/Writing_Sphinx_Documentation.md
 include mkinx/index.md
 include mkinx/How_To_Use_Mkinx.md
 include mkinx/mkdocs.yml
+include mkinx/material-style.css
+include mkinx/material-icons.woff2
 recursive-include mkinx/example_project/ *

@@ -1,16 +1,12 @@
-from subprocess import call
 import os
 import time
-import sys
-import re
+import threading
 from pathlib import Path
 from shutil import copyfile, copytree
 from http.server import SimpleHTTPRequestHandler
 import socketserver
-import time
+import subprocess
 from watchdog.observers import Observer
-import threading
-import json
 
 from . import utils
 from .conf import PORT, __VERSION__, PROJECT_MARKER
@@ -35,6 +31,13 @@ def serve(args):
 
     # Update routes
     utils.set_routes()
+
+    # Offline mode
+    if args.offline:
+        os.environ['MKINX_OFFLINE'] = "true"
+        _ = subprocess.check_output(
+            'mkdocs build > /dev/null', shell=True)
+        utils.make_offline()
 
     class MkinxHTTPHandler(SimpleHTTPRequestHandler):
         """Class routing urls (paths) to projects (resources)
@@ -206,6 +209,9 @@ def build(args):
             print('\n\n>>>>>> Build Complete.')
         else:
             os.system("mkdocs build > /dev/null")
+
+        if args.offline:
+            utils.make_offline()
 
 
 def init(args):
