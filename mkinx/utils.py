@@ -145,7 +145,7 @@ class MkinxFileHandler(PatternMatchingEventHandler):
             -> mkinx build -F -p {project}
     """
 
-    def on_modified(self, event):
+    def on_any_event(self, event):
         set_routes()
 
         offline = ""
