@@ -23,20 +23,19 @@ def serve(args):
     """
     # Sever's parameters
     port = args.serve_port or PORT
-    host = '0.0.0.0'
+    host = "0.0.0.0"
 
     # Current working directory
     dir_path = Path().absolute()
-    web_dir = dir_path / 'site'
+    web_dir = dir_path / "site"
 
     # Update routes
     utils.set_routes()
 
     # Offline mode
     if args.offline:
-        os.environ['MKINX_OFFLINE'] = "true"
-        _ = subprocess.check_output(
-            'mkdocs build > /dev/null', shell=True)
+        os.environ["MKINX_OFFLINE"] = "true"
+        _ = subprocess.check_output("mkdocs build > /dev/null", shell=True)
         utils.make_offline()
 
     class MkinxHTTPHandler(SimpleHTTPRequestHandler):
@@ -48,27 +47,27 @@ def serve(args):
             location = str(web_dir)
             route = location
 
-            if len(path) != 0 and path != '/':
+            if len(path) != 0 and path != "/":
                 for key, loc in utils.get_routes():
                     if path.startswith(key):
                         location = loc
-                        path = path[len(key):]
+                        path = path[len(key) :]
                         break
 
-            if location[-1] == '/' or not path or path[0] == '/':
+            if location[-1] == "/" or not path or path[0] == "/":
                 route = location + path
             else:
-                route = location + '/' + path
+                route = location + "/" + path
 
             # print(location)
             # print(path)
             # print(route.split('?')[0])
-            return route.split('?')[0]
+            return route.split("?")[0]
 
     # Serve as deamon thread
     success = False
     count = 0
-    print('Waiting for server port...')
+    print("Waiting for server port...")
     try:
         while not success:
             try:
@@ -78,14 +77,12 @@ def serve(args):
                 count += 1
             finally:
                 if not success and count > 20:
-                    s = 'port {} seems occupied. Try with {} ? (y/n)'
-                    if 'y' in input(s.format(port, port + 1)):
+                    s = "port {} seems occupied. Try with {} ? (y/n)"
+                    if "y" in input(s.format(port, port + 1)):
                         port += 1
                         count = 0
                     else:
-                        print(
-                            'You can specify a custom port with mkinx serve -s'
-                        )
+                        print("You can specify a custom port with mkinx serve -s")
                         return
                 time.sleep(0.5)
     except KeyboardInterrupt:
@@ -99,7 +96,7 @@ def serve(args):
     thread.start()
 
     # Watch for changes
-    event_handler = utils.MkinxFileHandler(patterns=['*.rst', '*.md'])
+    event_handler = utils.MkinxFileHandler(patterns=["*.rst", "*.md"])
     observer = Observer()
     observer.schedule(event_handler, path=str(dir_path), recursive=True)
     observer.start()
@@ -135,10 +132,13 @@ def build(args):
 
     # Set of all available projects in the dir
     # Projects must contain a PROJECT_MARKER file.
-    all_projects = {m for m in os.listdir(dir_path)
-                    if os.path.isdir(m) and
-                    'build' in os.listdir(dir_path / m) and
-                    'source' in os.listdir(dir_path / m)}
+    all_projects = {
+        m
+        for m in os.listdir(dir_path)
+        if os.path.isdir(m)
+        and "build" in os.listdir(dir_path / m)
+        and "source" in os.listdir(dir_path / m)
+    }
 
     if args.all and args.projects:
         print(
@@ -158,21 +158,20 @@ def build(args):
 
     if args.force:
         go = True
-        projects = all_projects if args.all else all_projects.intersection(
-            set(args.projects))
+        projects = (
+            all_projects if args.all else all_projects.intersection(set(args.projects))
+        )
 
     elif args.projects:
-        s = 'You are about to build the docs for: '
-        s += "\n- {}\nContinue? (y/n) ".format(
-            '\n- '.join(args.projects))
-        if 'y' in input(s):
+        s = "You are about to build the docs for: "
+        s += "\n- {}\nContinue? (y/n) ".format("\n- ".join(args.projects))
+        if "y" in input(s):
             go = True
-            projects = all_projects.intersection(
-                set(args.projects))
+            projects = all_projects.intersection(set(args.projects))
     elif args.all:
         s = "You're about to build the docs for ALL projects."
         s += "\nContinue? (y/n) "
-        if 'y' in input(s):
+        if "y" in input(s):
             go = True
             projects = all_projects
 
@@ -188,26 +187,27 @@ def build(args):
         for project_to_build in projects:
             # Re-build documentation
             if args.verbose:
-                os.system("cd {} && make clean && make html".format(
-                    dir_path / project_to_build
-                ))
+                os.system(
+                    "cd {} && make clean && make html".format(
+                        dir_path / project_to_build
+                    )
+                )
             else:
                 os.system(
                     "cd {} && make clean && make html > /dev/null".format(
                         dir_path / project_to_build
-                    ))
+                    )
+                )
 
             # Add link to Documentation's Home
             utils.overwrite_home(project_to_build, dir_path)
 
             if args.verbose:
-                print('\n>>>>>> Done {}\n\n\n'.format(
-                    project_to_build
-                ))
+                print("\n>>>>>> Done {}\n\n\n".format(project_to_build))
         # Build Documentation
         if args.verbose:
             os.system("mkdocs build")
-            print('\n\n>>>>>> Build Complete.')
+            print("\n\n>>>>>> Build Complete.")
         else:
             os.system("mkdocs build > /dev/null")
 
@@ -224,9 +224,9 @@ def init(args):
     # working directory
     dir_path = Path().absolute()
 
-    if not args.project_name or args.project_name.find('/') >= 0:
+    if not args.project_name or args.project_name.find("/") >= 0:
         print(
-            '{}You should specify a valid project name{}'.format(
+            "{}You should specify a valid project name{}".format(
                 utils.colors.FAIL, utils.colors.ENDC
             )
         )
@@ -239,29 +239,29 @@ def init(args):
         project_path.mkdir()
     else:
         print(
-            '{}This project already exists{}'.format(
+            "{}This project already exists{}".format(
                 utils.colors.FAIL, utils.colors.ENDC
             )
         )
         return
 
     # Directory with the Home Documentation's source code
-    home_doc_path = project_path / 'docs'
+    home_doc_path = project_path / "docs"
     home_doc_path.mkdir()
-    help_doc_path = home_doc_path / 'help'
+    help_doc_path = home_doc_path / "help"
     help_doc_path.mkdir()
 
     file_path = Path(__file__).resolve().parent
 
     # Add initial files
-    copyfile(file_path / 'index.md',
-             home_doc_path / 'index.md')
-    copyfile(file_path / 'How_To_Use_Mkinx.md',
-             help_doc_path / 'How_To_Use_Mkinx.md')
-    copyfile(file_path / 'Writing_Sphinx_Documentation.md',
-             help_doc_path / 'Writing_Sphinx_Documentation.md')
+    copyfile(file_path / "index.md", home_doc_path / "index.md")
+    copyfile(file_path / "How_To_Use_Mkinx.md", help_doc_path / "How_To_Use_Mkinx.md")
+    copyfile(
+        file_path / "Writing_Sphinx_Documentation.md",
+        help_doc_path / "Writing_Sphinx_Documentation.md",
+    )
 
-    with open(file_path/'mkdocs.yml', 'r') as f:
+    with open(file_path / "mkdocs.yml", "r") as f:
         lines = f.readlines()
 
     input_text = "What is your Documentation's name"
@@ -270,51 +270,62 @@ def init(args):
 
     site_name = input(input_text.format(args.project_name.capitalize()))
     if not site_name:
-        site_name = "{} - Home Documentation".format(
-            args.project_name.capitalize()
-        )
+        site_name = "{} - Home Documentation".format(args.project_name.capitalize())
 
-    lines[0] = 'site_name: {}\n'.format(site_name)
+    lines[0] = "site_name: {}\n".format(site_name)
 
-    with open(project_path/'mkdocs.yml', 'w') as f:
+    with open(project_path / "mkdocs.yml", "w") as f:
         f.writelines(lines)
 
-    os.system('cd {} && mkdocs build > /dev/null'.format(
-        args.project_name
-    ))
+    os.system("cd {} && mkdocs build > /dev/null".format(args.project_name))
 
     # User may want to include a showcase project as tutorial
     example_project = False
-    if 'y' in input('Include example project showcasing Sphinx\
-                     and autodocs? (y/n) '):
+    if "y" in input(
+        "Include example project showcasing Sphinx\
+                     and autodocs? (y/n) "
+    ):
         example_project = True
-        copytree(file_path / 'example_project',
-                 project_path / 'example_project')
-        static = project_path / 'example_project' / 'source'
-        static /= '_static'
+        copytree(file_path / "example_project", project_path / "example_project")
+        static = project_path / "example_project" / "source"
+        static /= "_static"
         if not static.exists():
             static.mkdir()
         os.system(
-            'cd {} && mkinx build -F -p example_project > /dev/null'.format(
+            "cd {} && mkinx build -F -p example_project > /dev/null".format(
                 args.project_name
-            ))
+            )
+        )
 
-        print("\n\n", utils.colors.OKBLUE,
-              '{}/{} created as a showcase of how mkinx works'.format(
-                  args.project_name, 'example_project'
-              ),
-              utils.colors.ENDC)
+        print(
+            "\n\n",
+            utils.colors.OKBLUE,
+            "{}/{} created as a showcase of how mkinx works".format(
+                args.project_name, "example_project"
+            ),
+            utils.colors.ENDC,
+        )
     if not example_project:
-        print('\n')
-    print('\n', utils.colors.OKGREEN, 'Succes!', utils.colors.ENDC,
-          'You can now start your Docs in ./{}\n'.format(args.project_name),
-          utils.colors.HEADER, '$ cd ./{}'.format(
-              args.project_name
-          ), utils.colors.ENDC)
-    print('  Start the server from within your Docs to see them \n  (default',
-          'port is 8443 but you can change it with the -s flag):')
-    print(utils.colors.HEADER, ' {} $ mkinx serve\n'.format(args.project_name),
-          utils.colors.ENDC)
+        print("\n")
+    print(
+        "\n",
+        utils.colors.OKGREEN,
+        "Succes!",
+        utils.colors.ENDC,
+        "You can now start your Docs in ./{}\n".format(args.project_name),
+        utils.colors.HEADER,
+        "$ cd ./{}".format(args.project_name),
+        utils.colors.ENDC,
+    )
+    print(
+        "  Start the server from within your Docs to see them \n  (default",
+        "port is 8443 but you can change it with the -s flag):",
+    )
+    print(
+        utils.colors.HEADER,
+        " {} $ mkinx serve\n".format(args.project_name),
+        utils.colors.ENDC,
+    )
 
 
 def version(args):
