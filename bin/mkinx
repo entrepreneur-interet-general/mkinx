@@ -10,7 +10,8 @@ COMMANDS = {
     'init': mkinx.init,
     'build': mkinx.build,
     'serve': mkinx.serve,
-    'version': mkinx.version
+    'version': mkinx.version,
+    'autodoc': mkinx.autodoc
 }
 
 
