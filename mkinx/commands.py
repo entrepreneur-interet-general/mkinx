@@ -1,15 +1,17 @@
 import os
 import time
 import threading
+import socketserver
+import subprocess
 from pathlib import Path
 from shutil import copyfile, copytree
 from http.server import SimpleHTTPRequestHandler
-import socketserver
-import subprocess
+import getpass
+import pexpect
 from watchdog.observers import Observer
 
 from . import utils
-from .conf import PORT, __VERSION__, PROJECT_MARKER
+from .conf import PORT, __VERSION__
 
 
 @utils.suggest_path
@@ -59,9 +61,6 @@ def serve(args):
             else:
                 route = location + "/" + path
 
-            # print(location)
-            # print(path)
-            # print(route.split('?')[0])
             return route.split("?")[0]
 
     # Serve as deamon thread
@@ -135,9 +134,7 @@ def build(args):
     all_projects = {
         m
         for m in os.listdir(dir_path)
-        if os.path.isdir(m)
-        and "build" in os.listdir(dir_path / m)
-        and "source" in os.listdir(dir_path / m)
+        if os.path.isdir(m) and "source" in os.listdir(dir_path / m)
     }
 
     if args.all and args.projects:
@@ -183,7 +180,7 @@ def build(args):
         # Home if the -o flag was used
         if args.only_index:
             projects = listed_projects.intersection(projects)
-
+        print("projects", projects)
         for project_to_build in projects:
             # Re-build documentation
             if args.verbose:
@@ -277,36 +274,25 @@ def init(args):
     with open(project_path / "mkdocs.yml", "w") as f:
         f.writelines(lines)
 
-    os.system("cd {} && mkdocs build > /dev/null".format(args.project_name))
+    copytree(file_path / "example_project", project_path / "example_project")
+    static = project_path / "example_project" / "source"
+    static /= "_static"
+    if not static.exists():
+        static.mkdir()
 
-    # User may want to include a showcase project as tutorial
-    example_project = False
-    if "y" in input(
-        "Include example project showcasing Sphinx\
-                     and autodocs? (y/n) "
-    ):
-        example_project = True
-        copytree(file_path / "example_project", project_path / "example_project")
-        static = project_path / "example_project" / "source"
-        static /= "_static"
-        if not static.exists():
-            static.mkdir()
-        os.system(
-            "cd {} && mkinx build -F -p example_project > /dev/null".format(
-                args.project_name
-            )
-        )
+    _ = subprocess.check_output(
+        "cd {} && mkinx build -F -A > /dev/null".format(args.project_name), shell=True
+    )
 
-        print(
-            "\n\n",
-            utils.colors.OKBLUE,
-            "{}/{} created as a showcase of how mkinx works".format(
-                args.project_name, "example_project"
-            ),
-            utils.colors.ENDC,
-        )
-    if not example_project:
-        print("\n")
+    print(
+        "\n\n",
+        utils.colors.OKBLUE,
+        "{}/{} created as a showcase of how mkinx works".format(
+            args.project_name, "example_project"
+        ),
+        utils.colors.ENDC,
+    )
+
     print(
         "\n",
         utils.colors.OKGREEN,
@@ -331,3 +317,92 @@ def init(args):
 def version(args):
     if args.version:
         print(__VERSION__)
+
+
+def autodoc(args):
+    child = pexpect.spawnu("sphinx-quickstart", ["./"], encoding="utf-8")
+    res = child.expect(
+        ["> Separate source and build directories*", "> Please enter a new root path*"]
+    )
+    if res == 1:
+        print("Error: an existing conf.py has been found in the selected root path.")
+        print("sphinx-quickstart will not overwrite existing Sphinx projects.")
+        child.close()
+        return
+
+    author = getpass.getuser()
+    project = Path().resolve().name
+    windows = input("> Create Windows command file? (y/n) [y]: ")
+
+    child.sendline("y")
+    child.expect("> Name prefix*")
+    child.sendline()
+    child.expect("> Project name:*")
+    child.sendline(project)
+    child.expect("> Author name*")
+    child.sendline(author)
+    child.expect("> Project release*")
+    child.sendline()
+    child.expect("> Project language*")
+    child.sendline("")
+    child.expect("> Source file suffix*")
+    child.sendline("")
+    child.expect("> Name of your master document*")
+    child.sendline("")
+    child.expect("> Do you want to use the epub builder*")
+    child.sendline("")
+    child.expect("> autodoc: automatically insert docstrings*")
+    child.sendline("y")
+    child.expect("> doctest: automatically test code snippets*")
+    child.sendline("")
+    child.expect("> intersphinx: link between Sphinx documentation*")
+    child.sendline("")
+    child.expect('> todo: write "todo" entries*')
+    child.sendline("")
+    child.expect("> coverage: checks for documentation coverage")
+    child.sendline("")
+    child.expect("> imgmath: include math, rendered as PNG or SVG images*")
+    child.sendline("")
+    child.expect("> mathjax: include math*")
+    child.sendline("")
+    child.expect("> ifconfig: conditional inclusion of content*")
+    child.sendline("")
+    child.expect("> viewcode: include links to the source code*")
+    child.sendline("")
+    child.expect("> githubpages: create .nojekyll file to publish the document*")
+    child.sendline("")
+    child.expect("> Create Makefile*")
+    child.sendline("")
+    child.expect("> Create Windows command*")
+    child.sendline(windows)
+    child.expect("Creating file*")
+    child.wait()
+    child.close()
+
+    utils.set_sphinx_config(Path() / "source" / "conf.py")
+    utils.set_initial_doc_files(Path().resolve())
+
+    index = Path().resolve().parent / "docs" / "index.md"
+    if not index.exists():
+        print("Error: the project could not be added to your home documentation")
+        print("`mkinx autodoc` should be run from: ")
+        print("    path/to/documentation/new_python_project")
+    else:
+        utils.add_project_to_doc_index(index, project)
+
+    _ = subprocess.check_output(
+        "cd .. && mkinx build -F -p {} > /dev/null".format(project), shell=True
+    )
+
+    print(
+        """\n    Creating file ./source/conf.py.
+    Creating file ./source/index.rst.
+    Creating file ./Makefile.
+
+    {}Finished{}: An initial directory structure has been created.
+
+    You should now enhance your master file ./source/index.rst
+    and other documentation source files.\n""".format(
+            utils.colors.OKGREEN, utils.colors.ENDC
+        )
+    )
