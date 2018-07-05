@@ -18,7 +18,7 @@ pip install mkinx
 
 # Getting Started
 
-Start you Home Documentation with 
+Start your Home Documentation with:
 
 ```
 mkinx init your_project
@@ -59,7 +59,7 @@ The built in documentation is there to help you but is in no way necessary, you 
 ```
 your_home_documentation/
     mkdocs.yml
-    docs/
+    docs/ # your home documentation, listing sphinx docs
         index.md # mandatory file -> mkdocs's index
     site/
     your_project_1/
@@ -80,6 +80,22 @@ your_home_documentation/
 **2** -> `mkdocs`'s `index.md` file must have a `# Projects` section listing them as in the example
 
 Also, remember to run commands from your Home Documenation's root folder (in `your_home_documentation/` in the example above) otherwise you may get errors saying `mkinx` can't find a file.
+
+## Adding a Python project
+
+`mkinx` comes with a useful `autodoc` command helping you easily add a new python project to your documentation.
+
+All you have to do is put the documented (Google-style docstrings) code along the documentation in `your_home_documentation/`. Say it's called `your_project_3`. Then you just need to go there and use `autodoc`:
+
+```
+$ cp -r path/to/your_project_3 path/to/doc/your_home_documentation/
+$ cd your_home_documentation/your_project_3/
+$ mkinx autodoc
+```
+
+Under the hood, `mkinx autodoc` runs `sphinx-quickstart`, updates default values to be compatible to the `mkinx` setting, builds the documentation with `mkinx build` and updated the Home Documentation's `index.md` file to list `your_project_3`.
+
+If `mkinx autodoc`'s default values for the `sphinx` documentation don't suit you, do update `your_project_3/conf.py`.
 
 ## Customization
 
