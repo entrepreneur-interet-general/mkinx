@@ -333,7 +333,7 @@ def autodoc(args):
 
     author = getpass.getuser()
     project = Path().resolve().name
-    windows = 'y' if "win" sys.platform.lower() else 'n'
+    windows = 'y' if sys.platform in {"win32", "cygwin"} else 'n'
 
     child.sendline("y")
     child.expect("> Name prefix*")
