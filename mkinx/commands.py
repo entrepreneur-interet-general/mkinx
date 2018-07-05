@@ -1,5 +1,6 @@
 import os
 import time
+import sys
 import threading
 import socketserver
 import subprocess
@@ -332,7 +333,7 @@ def autodoc(args):
 
     author = getpass.getuser()
     project = Path().resolve().name
-    windows = input("> Create Windows command file? (y/n) [y]: ")
+    windows = 'y' if "win" sys.platform.lower() else 'n'
 
     child.sendline("y")
     child.expect("> Name prefix*")
