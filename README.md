@@ -54,7 +54,7 @@ The package comes with a thorough documentation by default, which you'll see by 
 
 The built in documentation is there to help you but is in no way necessary, you can overwrite or delete everything. **There are however 2 mandatory things:**
 
-**1**-> You have to keep this structure:
+**1** You have to keep this structure:
 
 ```
 your_home_documentation/
@@ -77,9 +77,9 @@ your_home_documentation/
     ...
 ```
 
-**2** -> `mkdocs`'s `index.md` file must have a `# Projects` section listing them as in the example
+**2**  `mkdocs`'s `index.md` file must have a `# Projects` section listing them as in the example
 
-Also, remember to run commands from your Home Documenation's root folder (in `your_home_documentation/` in the example above) otherwise you may get errors saying `mkinx` can't find a file.
+Also, remember to run `build` or `serve` commands from your Home Documenation's root folder (in `your_home_documentation/` in the example above) otherwise you may get errors saying `mkinx` can't find a file.
 
 ## Adding a Python project
 
