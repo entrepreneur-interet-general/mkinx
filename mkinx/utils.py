@@ -55,7 +55,7 @@ def suggest_path(func):
     return wrapper
 
 
-def overwrite_home(project, dir_path):
+def overwrite_view_source(project, dir_path):
     """In the project's index.html built file, replace the top "source"
     link with a link to the documentation's home, which is mkdoc's home
 
@@ -67,15 +67,20 @@ def overwrite_home(project, dir_path):
     project_html_location = dir_path / project / HTML_LOCATION
     if not project_html_location.exists():
         return
-    with open(project_html_location, "r") as index_html:
-        new_html_reversed = index_html.readlines()[::-1]
-    for i, l in enumerate(new_html_reversed):
-        if TO_REPLACE_WITH_HOME in l:
-            new_html_reversed[i] = NEW_HOME_LINK
-            break
-    with open(project_html_location, "w") as index_html:
-        new_html = new_html_reversed[::-1]
-        index_html.writelines(new_html)
+
+    files_to_overwrite = [
+        f for f in project_html_location.iterdir() if "html" in f.suffix
+    ]
+
+    for html_file in files_to_overwrite:
+        with open(html_file, "r") as f:
+            html = f.readlines()
+        for i, l in enumerate(html):
+            if TO_REPLACE_WITH_HOME in l:
+                html[i] = NEW_HOME_LINK
+                break
+        with open(html_file, "w") as f:
+            f.writelines(html)
 
 
 def get_listed_projects():
@@ -219,20 +224,20 @@ def set_sphinx_config(path_to_config):
 
     for l in lines:
         if "# import os" in l:
-            l = "import os"
+            l = "import os\n"
         if "# import sys" in l:
-            l = "import sys"
+            l = "import sys\n"
         if "# sys.path.insert(0, os.path.abspath('.'))" in l:
             l = "sys.path.insert(0, os.path.abspath('.'))\n"
-            l += "sys.path.insert(0, os.path.abspath('..'))"
+            l += "sys.path.insert(0, os.path.abspath('..'))\n"
         if "'sphinx.ext.autodoc'," in l:
-            l = "'sphinx.ext.autodoc', 'sphinx.ext.napoleon'"
+            l = "'sphinx.ext.autodoc', 'sphinx.ext.napoleon'\n"
         if "html_theme = 'alabaster'" in l:
-            l = "html_theme = 'sphinx_rtd_theme'"
+            l = "html_theme = 'sphinx_rtd_theme'\n"
         new_lines.append(l)
 
     with path.open("w") as f:
-        f.write("\n".join(new_lines))
+        f.write("".join(new_lines))
 
 
 def set_initial_doc_files(project_path):
@@ -291,6 +296,19 @@ def create_rst_for_package(package_path, source_path):
     filename = package_path.name + ".rst"
     with open(source_path / filename, "w") as f:
         f.write(header + body)
+
+
+def add_modules_to_rst_index(index_path):
+    with open(index_path, "r") as index_file:
+        lines = index_file.readlines()
+
+    for i, l in enumerate(lines):
+        if "Indices and tables" in l:
+            l = "   modules\n\n"
+            lines[i] = l
+
+    with open(index_path, "w") as f:
+        f.write("".join(lines))
 
 
 def add_project_to_doc_index(index_path, project_name):

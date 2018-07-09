@@ -198,7 +198,7 @@ def build(args):
                 )
 
             # Add link to Documentation's Home
-            utils.overwrite_home(project_to_build, dir_path)
+            utils.overwrite_view_source(project_to_build, dir_path)
 
             if args.verbose:
                 print("\n>>>>>> Done {}\n\n\n".format(project_to_build))
@@ -333,7 +333,7 @@ def autodoc(args):
 
     author = getpass.getuser()
     project = Path().resolve().name
-    windows = 'y' if sys.platform in {"win32", "cygwin"} else 'n'
+    windows = "y" if sys.platform in {"win32", "cygwin"} else "n"
 
     child.sendline("y")
     child.expect("> Name prefix*")
@@ -380,8 +380,15 @@ def autodoc(args):
     child.wait()
     child.close()
 
+    print("\n    Documentation generated. Setting configuration...")
+
     utils.set_sphinx_config(Path() / "source" / "conf.py")
-    utils.set_initial_doc_files(Path().resolve())
+
+    _ = subprocess.check_output(
+        "sphinx-apidoc -f -o source . -e -M > /dev/null".format(project), shell=True
+    )
+
+    utils.add_modules_to_rst_index(Path() / "source" / "index.rst")
 
     index = Path().resolve().parent / "docs" / "index.md"
     if not index.exists():

@@ -8,12 +8,12 @@ PROJECT_MARKER = "__project__"
 PROJECT_KEY = "# Projects"
 # Hard link to the index.html file to update with link to the
 # Documentation's home
-HTML_LOCATION = "build/html/index.html"
+HTML_LOCATION = "build/html/"
 # mkdocs's home file
 MKDOCS_INDEX = "docs/index.md"
 
 # Substring marking the line to replace
-TO_REPLACE_WITH_HOME = '<a href="_sources/index.rst.txt" '
+TO_REPLACE_WITH_HOME = '<a href="_sources'
 # New line replacing the above one
-NEW_HOME_LINK = '<h3><a href="/"> Documentation\'s Home</a></h3>'
+NEW_HOME_LINK = '<h3><a href="/">Home</a></h3>'
 PORT = 8443
