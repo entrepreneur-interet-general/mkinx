@@ -154,8 +154,11 @@ class MkinxFileHandler(PatternMatchingEventHandler):
         set_routes()
 
         offline = ""
-        if event.src_path.split(".")[-1] == "md":
-            _ = subprocess.check_output("mkdocs build > /dev/null", shell=True)
+        if event.src_path.split(".")[-1] in {"md", "yml", "yaml"}:
+            try:
+                _ = subprocess.check_output("mkdocs build > /dev/null", shell=True)
+            except subprocess.CalledProcessError as e:
+                print(e, '\n')
             if json.loads(os.getenv("MKINX_OFFLINE", "false")):
                 make_offline()
 

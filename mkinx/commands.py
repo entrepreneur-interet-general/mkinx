@@ -96,7 +96,7 @@ def serve(args):
     thread.start()
 
     # Watch for changes
-    event_handler = utils.MkinxFileHandler(patterns=["*.rst", "*.md"])
+    event_handler = utils.MkinxFileHandler(patterns=["*.rst", "*.md", "*.yml", "*.yaml"])
     observer = Observer()
     observer.schedule(event_handler, path=str(dir_path), recursive=True)
     observer.start()

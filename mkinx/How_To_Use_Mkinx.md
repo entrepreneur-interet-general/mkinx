@@ -21,21 +21,83 @@ This Documentation has 2 layers:
 !!! important
     `index.md` **has** to have a section "# Projects"
 
+
 ## Adding a new project to the list
 
-This procedure is independant from the presence of code in your project (_i.e._ whether or not it is already started or not yet). It is also independant from the presence of Documenation. See [Write Sphinx Documentation](Writing_Sphinx_Documentation) for that matter. 
+### Manually
+
+This procedure is independant from the presence of code in your project (_i.e._ whether or not it is already started or not yet). It is also independant from the presence of Documentation. See [Write Sphinx Documentation](Writing_Sphinx_Documentation) for that matter. 
 
 To list a new project in the *Projects* section:
 
 1. Add it at the root of this Home Documentation (where `docs/` and `mkdocs.yml` are)
-2. Add a specific empty file to it : `touch my_awesome_project/__project__`
-3. Mention it in this file's (`index.md`) [Projects](/#projects) section as follows:
+2. Mention it in this file's (`index.md`) [Projects](/#projects) section as follows:
 ```
     * [My Project](/my_awesome_project) - My Project's short description`
 ```
 
+!!! important
+    `mkinx` expects to find a folder `build` in your project, and will display `build/index.html`.
+
+
 !!! note 
     `my_awesome_project` is the name of the folder your project is in, and the `/` is mandatory
+
+### Automatically add a python project
+
+`mkinx` comes with a handy `autodoc` feature to:
+
+* create a new `sphinx` documentation
+* reference your docstrings with `sphinx apidoc`
+* add the project to your Home Documentation
+
+##### Example
+
+Say you have this file structure:
+
+    mkdocs.yml    # The configuration file for mkdocs.
+    docs/
+        index.md  # The documentation homepage (this one).
+        ...       # Other markdown pages, images and other files. Standard mkdocs.
+    project1/
+        ... # an existing project's documentation
+
+and say you want to add `project2` to your list. You just have to create a new directory, put your code in there and run `mkinx autodoc`:
+
+```bash
+# from your documentation's root
+$ mkdir project2
+$ cd project 2
+$ cp -r path/to/project2 ./
+$ ls
+project2
+$ mkinx autodoc
+... some prints
+$ ls
+Makefile    source    build    project2
+```
+now your file structure looks like:
+
+    mkdocs.yml    # The configuration file for mkdocs.
+    docs/
+        index.md  # The documentation homepage (this one).
+        ...       # Other markdown pages, images and other files. Standard mkdocs.
+    project1/
+        ... # an existing project's documentation
+    project2/
+        project2/ # your documented code here
+            ...
+        source/ # the source documents for sphinx to build your doc
+            index.rst # rst files hold the code documentation's skeletton
+            conf.py # sphinx configuration file
+            ...
+        build/ # the built docs, in html
+            index.html
+            ...
+        Makefile # sphinx's make instructions; mkinx runs make html
+
+
+Now you can check your Home Documentation's `Projects` section, it will be there!
 
 ## Built-in Server
 
@@ -78,16 +140,16 @@ optional arguments:
 `mkinx build` does 3 things:
 
 1. Build your projects' documentations by running `make html` in the relevant projects (according to the listed projects if you use `-p` or `-A` flags)
-2. Update your projects' documentations' `index.html` files to add a link back here
-3. Build `mkdoc`'s home documentation, _i.e._ this very document and others as parametered in `mkdocs.yml`
+2. Update your projects' documentations' `html` files to add a link back here to the Home Documentation
+3. Build `mkdoc`'s home documentation, _i.e._ this very document and others as parametrized in `mkdocs.yml`
 
 A couple examples:
 
 * To build a new project's documentation but leave others untouched:
-    * `python build.py -p my_awesome_project`
+    * `mkinx build -p my_awesome_project`
     * Obviously works to rebuild it every time it is updated
 * To build documentations for all projects which are listed in [Projects](/#projects):
-    * `python build.py -A -o`
+    * `mkinx build -A -o`
     * There may be projects not listed above for any reason and you may not want to build their documentation, hence the `-o` flag
 
 ## Configuration
@@ -104,6 +166,13 @@ Explore the `mkdocs.yml` file to configure your Home Documentation. Here are the
 * `markdown_extensions:` is a list of extensions to use. they are listed [here](https://python-markdown.github.io/extensions/#officially-supported-extensions)
     * `- admonition` allows for reStructuredText-style admonition, that is the "important", "note" and "danger" colored boxes
 
+#### Useful Resources:
+
+* [Mkdocs's Getting Started](https://www.mkdocs.org/user-guide/writing-your-docs/)
+* [Material for Mkdocs's customization instructions](https://squidfunk.github.io/mkdocs-material/customization/)
+* [Material for Mkdocs's supported extensions list](https://squidfunk.github.io/mkdocs-material/extensions/admonition/)
+
+
 ### Projects' Documentations: `sphinx`
 
-In your project's `source` directory lies the source files for `sphinx` to generate your documentation. As for the Home Documentation you should explore the `conf.py` file in this `source` directory to set this particular project's configuration. 
+In your project's `source` directory lies the source files for `sphinx` to generate your documentation. As for the Home Documentation you should explore the `conf.py` file in this `source` directory to set this particular project's configuration.

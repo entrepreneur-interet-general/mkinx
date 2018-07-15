@@ -25,6 +25,7 @@ setup(name='mkinx',
           'mkdocs',
           'sphinx_rtd_theme',
           'mkdocs-material',
-          'pexpect'
+          'pexpect',
+          'pygments'
       ],
       )
