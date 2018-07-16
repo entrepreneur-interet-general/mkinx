@@ -5,14 +5,23 @@ import threading
 import socketserver
 import subprocess
 from pathlib import Path
-from shutil import copyfile, copytree
+from shutil import copyfile, copytree, rmtree
 from http.server import SimpleHTTPRequestHandler
 import getpass
 import pexpect
 from watchdog.observers import Observer
+import warnings
 
 from . import utils
 from .conf import PORT, __VERSION__
+
+
+def custom_formatwarning(msg, *args, **kwargs):
+    # ignore everything except the message
+    return str(msg) + "\n"
+
+
+warnings.formatwarning = custom_formatwarning
 
 
 @utils.suggest_path
@@ -96,7 +105,9 @@ def serve(args):
     thread.start()
 
     # Watch for changes
-    event_handler = utils.MkinxFileHandler(patterns=["*.rst", "*.md", "*.yml", "*.yaml"])
+    event_handler = utils.MkinxFileHandler(
+        patterns=["*.rst", "*.md", "*.yml", "*.yaml"]
+    )
     observer = Observer()
     observer.schedule(event_handler, path=str(dir_path), recursive=True)
     observer.start()
@@ -184,6 +195,7 @@ def build(args):
         print("projects", projects)
         for project_to_build in projects:
             # Re-build documentation
+            warnings.warn("[sphinx]")
             if args.verbose:
                 os.system(
                     "cd {} && make clean && make html".format(
@@ -207,6 +219,7 @@ def build(args):
             os.system("mkdocs build")
             print("\n\n>>>>>> Build Complete.")
         else:
+            warnings.warn("[mkdocs]")
             os.system("mkdocs build > /dev/null")
 
         if args.offline:
@@ -321,18 +334,40 @@ def version(args):
 
 
 def autodoc(args):
+    author = getpass.getuser()
+    project = Path().resolve().name
+
+    if "y" not in input(
+        'Do you want to generate the documentation for "{}"? [y/n] :'.format(project)
+    ):
+        return
+
     child = pexpect.spawnu("sphinx-quickstart", ["./"], encoding="utf-8")
     res = child.expect(
         ["> Separate source and build directories*", "> Please enter a new root path*"]
     )
     if res == 1:
-        print("Error: an existing conf.py has been found in the selected root path.")
-        print("sphinx-quickstart will not overwrite existing Sphinx projects.")
+        print(
+            "\n{}Error{}".format(utils.colors.FAIL, utils.colors.ENDC),
+            "an existing conf.py has been found in the selected root path.",
+        )
+        print(
+            "sphinx-quickstart will not overwrite existing Sphinx projects by itself."
+        )
         child.close()
-        return
+        if "y" in input(
+            "\n{}Force overwriting?{} (you will lose the current".format(
+                utils.colors.WARNING, utils.colors.ENDC
+            )
+            + " ./build/ and ./source/ folders) [y/n] : "
+        ):
+            _ = subprocess.check_output("mkinx clean", shell=True)
+            child = pexpect.spawnu("sphinx-quickstart", ["./"], encoding="utf-8")
+            child.expect("> Separate source and build directories*")
+        else:
+            return
+    print("\n    Setting up the project...")
 
-    author = getpass.getuser()
-    project = Path().resolve().name
     windows = "y" if sys.platform in {"win32", "cygwin"} else "n"
 
     child.sendline("y")
@@ -380,15 +415,31 @@ def autodoc(args):
     child.wait()
     child.close()
 
-    print("\n    Documentation generated. Setting configuration...")
+    print("    Building documentation...")
 
     utils.set_sphinx_config(Path() / "source" / "conf.py")
 
-    _ = subprocess.check_output(
-        "sphinx-apidoc -f -o source . -e -M > /dev/null".format(project), shell=True
-    )
+    try:
+        _ = subprocess.check_output(
+            "sphinx-apidoc -f -o source {} -e -M > /dev/null".format(project),
+            shell=True,
+        )
+    except subprocess.CalledProcessError as e:
+        # print(e)
+        print(
+            "{}Error{} ".format(utils.colors.FAIL, utils.colors.ENDC),
+            "you should run `autodoc` from a project folder,",
+            "with an importable project package",
+        )
+        print("Cleaning...", end="")
+        _ = subprocess.check_output("mkinx clean", shell=True)
+        print(u"\u2713")
+        return
 
-    utils.add_modules_to_rst_index(Path() / "source" / "index.rst")
+    utils.add_project_to_rst_index(Path() / "source" / "index.rst", project)
+    utils.remove_project_name_from_titles(Path() / "source")
+
+    os.remove(Path() / "source" / "modules.rst")
 
     index = Path().resolve().parent / "docs" / "index.md"
     if not index.exists():
@@ -403,14 +454,30 @@ def autodoc(args):
     )
 
     print(
-        """\n    Creating file ./source/conf.py.
-    Creating file ./source/index.rst.
-    Creating file ./Makefile.
+        u"""\n    Added configuration file source/conf.py
+    Added documentation files /source/*.rst
+    Added utility file ./Makefile
+    {}
 
-    {}Finished{}: An initial directory structure has been created.
+    {}Finished \u2713{} An initial directory structure has been created.
 
-    You should now enhance your master file ./source/index.rst
+    You can now enhance your master file source/index.rst
     and other documentation source files.\n""".format(
-            utils.colors.OKGREEN, utils.colors.ENDC
+            "Added utility file make.bat" if windows == "y" else "",
+            utils.colors.OKGREEN,
+            utils.colors.ENDC,
         )
     )
+
+
+def clean(args):
+    rmtree("source", ignore_errors=True)
+    rmtree("build", ignore_errors=True)
+    try:
+        os.remove("Makefile")
+    except FileNotFoundError:
+        pass
+    try:
+        os.remove("make.bat")
+    except FileNotFoundError:
+        pass

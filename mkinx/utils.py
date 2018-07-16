@@ -158,7 +158,7 @@ class MkinxFileHandler(PatternMatchingEventHandler):
             try:
                 _ = subprocess.check_output("mkdocs build > /dev/null", shell=True)
             except subprocess.CalledProcessError as e:
-                print(e, '\n')
+                print(e, "\n")
             if json.loads(os.getenv("MKINX_OFFLINE", "false")):
                 make_offline()
 
@@ -239,37 +239,16 @@ def set_sphinx_config(path_to_config):
             l = "html_theme = 'sphinx_rtd_theme'\n"
         new_lines.append(l)
 
+    html_theme_options = "\nhtml_theme_options = {\n"
+    html_theme_options += "'titles_only': True,\n"
+    html_theme_options += "'navigation_depth': -1,\n"
+    html_theme_options += "'collapse_navigation': False\n"
+    html_theme_options += "}\n"
+
+    new_lines.append(html_theme_options)
+
     with path.open("w") as f:
         f.write("".join(new_lines))
-
-
-def set_initial_doc_files(project_path):
-    path = Path(project_path)
-    packages = [
-        p.resolve()
-        for p in path.iterdir()
-        if p.name not in {"source", "build"}
-        and p.is_dir()
-        and "__init__.py" in [m.name for m in p.iterdir() if not m.is_dir()]
-    ]
-
-    title = "{}'s Documentation".format(
-        " ".join([w.capitalize() for w in path.name.split("_")])
-    )
-    header = "{}\n{}\n".format(title, "=" * len(title))
-
-    index = header
-    index += ".. toctree::\n   :maxdepth: 2\n   :caption: Contents:\n\n"
-
-    for p in packages:
-        create_rst_for_package(p, path / "source")
-        index += "   {}\n".format(p.name)
-
-    index += "\n\nIndices and tables\n==================\n"
-    index += "* :ref:`genindex`\n* :ref:`modindex`\n* :ref:`search`\n\n"
-
-    with open(project_path / "source" / "index.rst", "w") as f:
-        f.write(index)
 
 
 def create_rst_for_package(package_path, source_path):
@@ -301,13 +280,16 @@ def create_rst_for_package(package_path, source_path):
         f.write(header + body)
 
 
-def add_modules_to_rst_index(index_path):
+def add_project_to_rst_index(index_path, project_name):
     with open(index_path, "r") as index_file:
         lines = index_file.readlines()
 
     for i, l in enumerate(lines):
         if "Indices and tables" in l:
-            l = "   modules\n\n"
+            l = "   {}\n\n".format(project_name)
+            lines[i] = l
+        elif ":maxdepth:" in l:
+            l = "   :maxdepth: 6\n"
             lines[i] = l
 
     with open(index_path, "w") as f:
@@ -353,3 +335,21 @@ def add_project_to_doc_index(index_path, project_name):
         new_lines.append(l)
     with open(index_path, "w") as f:
         f.write("".join([l for l in new_lines if l]))
+
+
+def remove_project_name_from_titles(source_path):
+    path = Path(source_path)
+    for fname in path.iterdir():
+        if fname.is_file() and fname.suffix == ".rst":
+            with open(fname, "r") as f:
+                lines = f.readlines()
+
+            if "==" in lines[1]:
+                no_package_or_modules = lines[0].split(" ")[0]
+                no_path = no_package_or_modules.split(".")[-1]
+                formatted = "``{}``".format(no_path).replace("\_", "_")
+                lines[0] = formatted + "\n"
+                lines[1] = "=" * len(formatted) + "\n"
+
+            with open(fname, "w") as f:
+                f.write("".join(lines))

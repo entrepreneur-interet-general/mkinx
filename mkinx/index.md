@@ -6,7 +6,7 @@ This is the Home of your awesome `python` projects' Documentation.
 
 # Customization
 
-This page can be customized as you want!
+This page can be customized as you want! See `/path_to_your_documentation/docs/index.md`
 
 !!! danger
     You should always keep a `# Projects` section and this file should be called `index.md`
