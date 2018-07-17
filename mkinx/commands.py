@@ -346,7 +346,7 @@ def init(args):
     print(
         "\n",
         utils.colors.OKGREEN,
-        "Succes!",
+        "Success!",
         utils.colors.ENDC,
         "You can now start your Docs in ./{}\n".format(args.project_name),
         utils.colors.HEADER,
