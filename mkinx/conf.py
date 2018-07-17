@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # Version string
-__VERSION__ = "0.3.2"
+__VERSION__ = "0.3.1.2"
 
 # For a directoy to be considered as a project with documentation
 # It must contain this empty file:
