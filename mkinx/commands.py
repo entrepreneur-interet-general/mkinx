@@ -1,19 +1,20 @@
+import getpass
 import os
-import time
-import sys
-import threading
 import socketserver
 import subprocess
-from pathlib import Path
-from shutil import copyfile, copytree, rmtree
+import sys
+import threading
+import time
+import warnings
 from http.server import SimpleHTTPRequestHandler
-import getpass
+from pathlib import Path
+from shutil import copyfile, copytree, move, rmtree
+
 import pexpect
 from watchdog.observers import Observer
-import warnings
 
 from . import utils
-from .conf import PORT, __VERSION__
+from .conf import __VERSION__, PORT
 
 
 def custom_formatwarning(msg, *args, **kwargs):
@@ -288,7 +289,26 @@ def init(args):
     with open(project_path / "mkdocs.yml", "w") as f:
         f.writelines(lines)
 
-    copytree(file_path / "example_project", project_path / "example_project")
+    example_project_path = project_path / "example_project" / "example_project"
+
+    windows = "y" if sys.platform in {"win32", "cygwin"} else "n"
+
+    copytree(file_path / "example_project", example_project_path)
+    move(str(example_project_path / "source"), str(project_path / "example_project"))
+    move(
+        str(project_path / "example_project" / "example_project" / "Makefile"),
+        str(project_path / "example_project"),
+    )
+    if windows == "y":
+        move(
+            str(project_path / "example_project" / "example_project" / "make.bat"),
+            str(project_path / "example_project"),
+        )
+    else:
+        os.remove(
+            str(project_path / "example_project" / "example_project" / "make.bat")
+        )
+
     static = project_path / "example_project" / "source"
     static /= "_static"
     if not static.exists():
@@ -404,7 +424,7 @@ def autodoc(args):
     child.expect("> ifconfig: conditional inclusion of content*")
     child.sendline("")
     child.expect("> viewcode: include links to the source code*")
-    child.sendline("")
+    child.sendline("y")
     child.expect("> githubpages: create .nojekyll file to publish the document*")
     child.sendline("")
     child.expect("> Create Makefile*")
@@ -416,8 +436,15 @@ def autodoc(args):
     child.close()
 
     print("    Building documentation...")
+    print(
+        '        If you see warnings such as "WARNING: autodoc: failed to import module',
+        '[...] No module named [...]"',
+        "\n        consider mocking the imports with:",
+        "\n             mkinx autodoc -m module1 module2 etc.",
+        "\n        see http://www.sphinx-doc.org/en/stable/ext/autodoc.html#confval-autodoc_mock_imports",
+    )
 
-    utils.set_sphinx_config(Path() / "source" / "conf.py")
+    utils.set_sphinx_config(Path() / "source" / "conf.py", project, args.mock_imports)
 
     try:
         _ = subprocess.check_output(

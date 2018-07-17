@@ -218,7 +218,7 @@ def update_index_to_offline(path):
         f.writelines(new_lines)
 
 
-def set_sphinx_config(path_to_config):
+def set_sphinx_config(path_to_config, project_name, mocks):
     path = Path(path_to_config).resolve()
     with path.open("r") as f:
         lines = f.readlines()
@@ -233,19 +233,25 @@ def set_sphinx_config(path_to_config):
         if "# sys.path.insert(0, os.path.abspath('.'))" in l:
             l = "sys.path.insert(0, os.path.abspath('.'))\n"
             l += "sys.path.insert(0, os.path.abspath('..'))\n"
-        if "'sphinx.ext.autodoc'," in l:
-            l = "'sphinx.ext.autodoc', 'sphinx.ext.napoleon'\n"
+            l += "sys.path.insert(0, os.path.abspath('../{}'))\n".format(project_name)
+        if "'sphinx.ext.viewcode'," in l:
+            l = "'sphinx.ext.viewcode', 'sphinx.ext.napoleon'\n"
         if "html_theme = 'alabaster'" in l:
             l = "html_theme = 'sphinx_rtd_theme'\n"
         new_lines.append(l)
 
-    html_theme_options = "\nhtml_theme_options = {\n"
-    html_theme_options += "'titles_only': True,\n"
-    html_theme_options += "'navigation_depth': -1,\n"
-    html_theme_options += "'collapse_navigation': False\n"
-    html_theme_options += "}\n"
+    extended_conf = "\nhtml_theme_options = {\n"
+    extended_conf += "    'titles_only': True,\n"
+    extended_conf += "    'navigation_depth': -1,\n"
+    extended_conf += "    'collapse_navigation': False\n"
+    extended_conf += "}\n"
+    extended_conf += "\nautoclass_content = 'both'\n"
+    if mocks:
+        extended_conf += "\nautodoc_mock_imports = [{}]\n".format(
+            ", ".join('"{}"'.format(m) for m in mocks)
+        )
 
-    new_lines.append(html_theme_options)
+    new_lines.append(extended_conf)
 
     with path.open("w") as f:
         f.write("".join(new_lines))
