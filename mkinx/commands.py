@@ -279,7 +279,7 @@ def init(args):
     help_doc_path = home_doc_path / "help"
     help_doc_path.mkdir()
 
-    file_path = Path(__file__).resolve().parent
+    file_path = Path(__file__).resolve().parent / "include"
 
     # Add initial files
     copyfile(file_path / "index.md", home_doc_path / "index.md")
