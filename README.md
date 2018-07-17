@@ -1,4 +1,8 @@
-[![PyPI version](https://badge.fury.io/py/mkinx.svg)](https://badge.fury.io/py/mkinx)
+
+<a href="https://pypi.python.org/pypi/mkinx"><img alt="PyPI" src="https://badge.fury.io/py/mkinx.svg"></a>
+
+<a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+
 
 # About
 
