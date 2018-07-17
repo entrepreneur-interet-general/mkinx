@@ -113,7 +113,9 @@ If you want to trigger a build manually, run `mkinx build` with some flags:
 
 ```
 usage: mkinx [-h] [--version] [-v] [-A] [-F] [-o]
-             [-p [PROJECTS [PROJECTS ...]]] [-s [SERVE_PORT]] [--offline]
+             [-p [PROJECTS [PROJECTS ...]]]
+             [-m [MOCK_IMPORTS [MOCK_IMPORTS ...]]] [-s [SERVE_PORT]]
+             [--offline]
              [{init,build,serve,version,clean,autodoc}] [project_name]
 
 Building Doc
@@ -133,6 +135,8 @@ optional arguments:
                         Documentation's Home
   -p [PROJECTS [PROJECTS ...]], --projects [PROJECTS [PROJECTS ...]]
                         [build] list of projects to build
+  -m [MOCK_IMPORTS [MOCK_IMPORTS ...]], --mock_imports [MOCK_IMPORTS [MOCK_IMPORTS ...]]
+                        [autodoc] list of imports to mock
   -s [SERVE_PORT], --serve_port [SERVE_PORT]
                         [serve] the server's port, defaults to 8443
   --offline             [build, serve] Whether references to external APIs

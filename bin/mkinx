@@ -52,6 +52,9 @@ parser.add_argument(
     "-p", "--projects", nargs="*", help="[build] list of projects to build"
 )
 parser.add_argument(
+    "-m", "--mock_imports", nargs="*", help="[autodoc] list of imports to mock"
+)
+parser.add_argument(
     "-s",
     "--serve_port",
     nargs="?",
