@@ -14,10 +14,10 @@
 
 <!-- TOC -->
 
-- [**About**](#about)
-- [**Install**](#install)
-- [**Getting Started**](#getting-started)
-- [**Usage**](#usage)
+- [About](#about)
+- [Install](#install)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
     - [Adding a Python project](#adding-a-python-project)
     - [Manual addition of a built documentation](#manual-addition-of-a-built-documentation)
     - [Customization](#customization)
@@ -38,6 +38,8 @@ Any `sphinx` module can be used as long as `make html` works and the built code 
 Default settings are that the Home Documentation will use a Material Design theme and Project Documentations will use Read The Docs's theme, to better distinguish the hierarchy. You can change that (in the global `mkdocs.yml` and in individual python projects' `conf.py`).
 
 # Install
+
+mkinx requires python3 and mainly uses `sphinx`, `mkdocs` and `watchdog` as 3rd party libraries. Check out the [full requirements](/requirements.txt)
 
 ```
 pip install mkinx
@@ -120,7 +122,7 @@ Also, remember to run `build` or `serve` commands from your Home Documenation's 
 
 `mkinx` comes with a useful `autodoc` command helping you easily add a new python project to your documentation.
 
-All you have to do is put the documented (Google-style docstrings) code along the documentation in `your_home_documentation/`. Say it's called `your_project_3`. Then you just need to go there and use `autodoc`:
+All you have to do is put the documented (Google-style docstrings) code along the documentation in `your_home_documentation/`. Say it's called `your_project_3`. Then you just need to make a new directory called `your_project_3` go there, copy `your_project_3`'s code in there (as a package, meaning it should include a `__init__.py` and use `autodoc`:
 
 ```
 $ pwd
@@ -136,13 +138,13 @@ $ ls
 Makefile    source    build    your_project_3
 ```
 
-Under the hood, `mkinx autodoc` runs `sphinx-quickstart`, updates default values to be compatible to the `mkinx` setting, runs `sphinx-autoapi`, rearranges the created `.rst` files, builds the documentation with `mkinx build` and updated the Home Documentation's `index.md` file to list `your_project_3`.
+Under the hood, `mkinx autodoc` runs `sphinx-quickstart`, updates default values in `conf.py`, runs `sphinx-apidoc`, rearranges the created `.rst` files, builds the documentation with `mkinx build` and updates the Home Documentation's `index.md` file to list `your_project_3`.
 
-If `mkinx autodoc`'s default values for the `sphinx` documentation don't suit you, do update `your_project_3/conf.py`.
+If `mkinx autodoc`'s default values for the `sphinx` documentation don't suit you, do update `/path_to_your_documentation/your_project_3/source/conf.py`.
 
 ## Manual addition of a built documentation
 
-If you dont want to `mkinx autodoc`, you may use any sphinx configuration you want. Just keep in mind that `mkinx` will run `make html` from your project's directory (so check that this works) and `mkinx serve` expects to find a file called `index.html` in a directory called `build/` in your project.
+If you don't want to `mkinx autodoc`, you may use any sphinx configuration you want. Just keep in mind that `mkinx` will run `make html` from your project's directory (so check that this works) and `mkinx serve` expects to find a file called `index.html` in a directory called `build/` in your project.
 
 ## Customization
 
