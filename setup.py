@@ -21,9 +21,9 @@ setup(name='mkinx',
       zip_safe=False,
       install_requires=[
           'watchdog',
-          'sphinx',
+          'sphinx>=1.7.6',
           'mkdocs',
-          'sphinx_rtd_theme',
+          'sphinx_rtd_theme>=0.4.0',
           'mkdocs-material',
           'pexpect',
           'pygments'
