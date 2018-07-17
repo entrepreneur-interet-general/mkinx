@@ -1,7 +1,30 @@
+<p align="center">
 
-<a href="https://pypi.python.org/pypi/mkinx"><img alt="PyPI" src="https://badge.fury.io/py/mkinx.svg"></a>
+<a href="https://pypi.python.org/pypi/mkinx">
+  <img alt="PyPI" src="https://badge.fury.io/py/mkinx.svg">
+</a>
+<a href="https://github.com/ambv/black">
+  <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg">
+</a>
+<a href="https://github.com/entrepreneur-interet-general/mkinx/blob/master/LICENCE">
+  <img alt="License: AGPL v3" src="https://img.shields.io/badge/License-AGPL%20v3-blue.svg">
+</a>
 
-<a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+</p>
+
+<!-- TOC -->
+
+- [**About**](#about)
+- [**Install**](#install)
+- [**Getting Started**](#getting-started)
+- [**Usage**](#usage)
+    - [Adding a Python project](#adding-a-python-project)
+    - [Manual addition of a built documentation](#manual-addition-of-a-built-documentation)
+    - [Customization](#customization)
+        - [Useful Resources](#useful-resources)
+
+<!-- /TOC -->
+---
 
 
 # About
@@ -36,7 +59,9 @@ mkinx serve
 
 Optionnaly you can specify a port with `mkinx serve -s your_port`
 
-Or manually build the documentation with
+<img src="http://g.recordit.co/3vikPzjJPv.gif" alt="mkinx demo" style="max-width:300px"></img>
+
+You can also manually build the documentation with `build`:
 
 ```
 mkinx build [FLAGS]
@@ -51,6 +76,8 @@ Flags being:
   -o, --only_index                          only build projects listed in the Documentation's Home
   -p, --projects [PROJECTS [PROJECTS ...]]  list of projects to build
 ```
+
+
 
 # Usage
 
