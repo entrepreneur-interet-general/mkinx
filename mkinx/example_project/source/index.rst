@@ -1,19 +1,19 @@
-.. TestTF documentation master file, created by
-   sphinx-quickstart on Fri Feb 16 17:39:32 2018.
+.. example_project documentation master file, created by
+   sphinx-quickstart on Tue Jul 17 14:04:56 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to TestTF's documentation!
-==================================
+Welcome to example_project's documentation!
+===========================================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
+   :caption: Contents:
 
-   matching
-   classif
-   datasets
 
-Indices and tables
+
+   example_project
+
 ==================
 
 * :ref:`genindex`

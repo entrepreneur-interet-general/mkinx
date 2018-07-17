@@ -14,6 +14,7 @@ class LogisticRegressor(object):
     def __init__(self, weights=None):
         """Initialize the LR
 
+        Args:
             weights (list, optional): Defaults to None.
                 Weights to start the training from,
         """
