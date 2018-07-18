@@ -1,16 +1,8 @@
-<p align="center">
+### DEPRECATED -> MOVED TO METADOCS
 
-<a href="https://pypi.python.org/pypi/mkinx">
-  <img alt="PyPI" src="https://badge.fury.io/py/mkinx.svg">
-</a>
-<a href="https://github.com/ambv/black">
-  <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg">
-</a>
-<a href="https://github.com/entrepreneur-interet-general/mkinx/blob/master/LICENCE">
-  <img alt="License: AGPL v3" src="https://img.shields.io/badge/License-AGPL%20v3-blue.svg">
-</a>
-
-</p>
+[**metadocs's repo**](https://github.com/entrepreneur-interet-general/metadocs)
+<br/><br/><br/><br/><br/><br/>
+---
 
 <!-- TOC -->
 
